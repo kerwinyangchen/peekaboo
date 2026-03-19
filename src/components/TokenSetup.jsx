@@ -84,6 +84,21 @@ export function TokenSetup({ onTokenSave }) {
             <ExternalLink size={11} aria-hidden="true" />
             <span className="sr-only">(opens in new tab)</span>
           </a>
+
+          <div className="mt-4 pt-4 border-t border-[#E2E2E2]">
+            <p className="text-xs text-[#767676] mb-2">When generating your token, only these permissions are needed:</p>
+            <ul className="space-y-1 mb-2">
+              <li className="text-xs text-[#767676]">
+                <span className="font-mono text-[#444444]">file_content:read</span>
+                {' '}— to read your screen designs
+              </li>
+              <li className="text-xs text-[#767676]">
+                <span className="font-mono text-[#444444]">file_metadata:read</span>
+                {' '}— to read file and page structure
+              </li>
+            </ul>
+            <p className="text-xs text-[#9B9B9B]">No write permissions are required. Peekaboo never modifies your Figma files.</p>
+          </div>
         </div>
 
         {/* Token form */}
