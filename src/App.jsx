@@ -218,7 +218,7 @@ export default function App() {
             <p className="text-xs text-[#767676]">
               Automated accessibility checks for designers.
             </p>
-            <p className="text-xs text-[#9B9B9B]">Made by Kerwin with Claude ✦</p>
+            <p className="text-xs text-[#9B9B9B]">Made by Kerwin Chen with Claude</p>
           </div>
         </footer>
       </div>
@@ -268,9 +268,10 @@ function shuffle(arr) {
 function LoadingState({ url }) {
   // Shuffled facts — stable for the lifetime of this loading session
   const factsRef = useRef(shuffle(ALL_FACTS))
-  const [factIdx, setFactIdx] = useState(0)
-  const [phase, setPhase]     = useState('enter') // 'enter' | 'exit'
+  const [factIdx, setFactIdx]     = useState(0)
+  const [phase, setPhase]         = useState('enter') // 'enter' | 'exit'
   const [activeStep, setActiveStep] = useState(0)
+  const [showTip, setShowTip]     = useState(false)
 
   // Rotate facts every 3s
   useEffect(() => {
@@ -294,6 +295,12 @@ function LoadingState({ url }) {
       setTimeout(() => setActiveStep(i), i * 900)
     )
     return () => timers.forEach(clearTimeout)
+  }, [])
+
+  // Show slow-scan tip after 30s
+  useEffect(() => {
+    const t = setTimeout(() => setShowTip(true), 30000)
+    return () => clearTimeout(t)
   }, [])
 
   const fact = factsRef.current[factIdx]
@@ -334,7 +341,7 @@ function LoadingState({ url }) {
       </div>
 
       {/* Steps strip — bottom */}
-      <div className="w-full max-w-lg" aria-hidden="true">
+      <div className="w-full max-w-lg space-y-4" aria-hidden="true">
         {url !== '__demo__' && (
           <p className="text-[10px] text-[#C8C8C4] font-mono truncate text-center mb-4">{url}</p>
         )}
@@ -360,6 +367,17 @@ function LoadingState({ url }) {
             )
           })}
         </div>
+
+        {/* Slow-scan tip — fades in after 30s */}
+        {showTip && (
+          <div className="px-4 py-3 bg-[#FDF8EE] border border-[#E8D5A0] rounded text-xs text-[#7A5E1A] leading-relaxed animate-fade-in">
+            <span className="mr-1.5">💡</span>
+            <span>
+              <span className="font-medium">Taking a while?</span>{' '}
+              Peekaboo scans every page and every screen in your Figma file. If you want faster results, try creating a new Figma file with only the screens you want to check.
+            </span>
+          </div>
+        )}
       </div>
     </div>
   )
