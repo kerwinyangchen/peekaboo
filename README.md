@@ -1,33 +1,56 @@
 # Peekaboo
 
-**Can your users see your UI?**
+**What your design is hiding.**
 
-Peekaboo scans Figma mobile designs for WCAG 2.1 AA and ADA accessibility issues — color contrast ratios, tap target sizes, and text sizing — and generates a per-screen report with actionable fixes.
+Peekaboo is an accessibility scanner for product designers. Paste a Figma file URL and get a screen-by-screen report checking every screen against WCAG 2.1 AA and ADA standards — no dev tools, no manual auditing.
 
-## Features
+🔗 **Live app: https://peekaboo-navy.vercel.app/**
 
-- Color contrast analysis (WCAG 2.1 AA / AAA)
-- Tap target size checks (44×44pt minimum)
-- Text size checks (11pt minimum)
-- Per-screen accessibility score
-- Figma node thumbnails for failed checks
-- Grouped by Figma page
+---
 
-## Getting Started
+## What it checks
 
-1. Copy `.env.example` to `.env` and add your Figma personal access token:
-   ```
-   VITE_FIGMA_TOKEN=your_token_here
-   ```
+- **Color contrast** — WCAG 2.1 AA requires 4.5:1 for normal text, 3:1 for large text
+- **Tap target sizes** — minimum 44×44pt following Apple's iOS HIG
+- **Text sizing** — minimum 11pt with dynamic type support
 
-2. Install dependencies and start the dev server:
-   ```bash
-   npm install
-   npm run dev
-   ```
+---
 
-3. Paste a Figma file URL and click **Scan**.
+## How it works
 
-## Tech Stack
+1. Paste your Figma file URL into Peekaboo
+2. Enter your Figma personal access token (stored locally, never sent to any server)
+3. Peekaboo scans every visible screen across all pages
+4. Get a screen-by-screen report with pass/fail per element and specific fix suggestions
 
-React 19 · Vite · Tailwind CSS · Figma REST API
+---
+
+## Required Figma token scopes
+
+When generating your Figma personal access token, only enable:
+- `file_content:read`
+- `file_metadata:read`
+
+No write permissions needed. Peekaboo never modifies your Figma files.
+
+---
+
+## Running locally
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:5173 and enter your Figma token when prompted.
+
+---
+
+## Tech stack
+
+React 19 · Vite · Tailwind CSS · shadcn/ui · Figma REST API
+
+---
+
+## Built by
+
+Kerwin Yang Chen — designed and built with Claude Code by Anthropic.
