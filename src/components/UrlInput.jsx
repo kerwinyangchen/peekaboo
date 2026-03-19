@@ -39,7 +39,7 @@ export function UrlInput({ onScan, isLoading, error }) {
 
   return (
     <section
-      className="flex flex-col items-center justify-center px-4 py-12 min-h-[calc(100dvh-3rem)] animate-slide-up"
+      className="flex flex-col items-center justify-center px-6 py-12 min-h-[calc(100dvh-3rem)] animate-slide-up"
       aria-labelledby="scan-heading"
     >
       {/* Wordmark */}
@@ -51,7 +51,7 @@ export function UrlInput({ onScan, isLoading, error }) {
       <div className="text-center max-w-2xl mb-16">
         <h1
           id="scan-heading"
-          className="text-4xl md:text-5xl font-bold text-[#121212] leading-tight mb-4 whitespace-nowrap"
+          className="text-4xl md:text-5xl font-bold text-[#121212] leading-tight mb-4"
           style={{ fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.01em' }}
         >
           What your design is{' '}

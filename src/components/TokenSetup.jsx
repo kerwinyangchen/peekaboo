@@ -41,7 +41,7 @@ export function TokenSetup({ onTokenSave }) {
 
   return (
     <section
-      className="flex flex-col items-center justify-center px-4 py-12 min-h-[calc(100dvh-3rem)] animate-slide-up"
+      className="flex flex-col items-center justify-center px-6 py-12 min-h-[calc(100dvh-3rem)] animate-slide-up"
       aria-labelledby="setup-heading"
     >
       {/* Wordmark */}
@@ -54,7 +54,7 @@ export function TokenSetup({ onTokenSave }) {
         <div className="mb-8">
           <h1
             id="setup-heading"
-            className="text-3xl md:text-4xl font-bold text-[#121212] leading-tight mb-3"
+            className="text-3xl md:text-4xl font-bold text-[#121212] leading-tight mb-3 text-balance"
             style={{ fontFamily: "'DM Serif Display', serif" }}
           >
             Connect your Figma account
