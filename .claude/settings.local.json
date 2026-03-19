@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/kerwinchen/.agents/skills/ui-ux-pro-max/**)",
+      "Bash(python3 scripts/search.py 'accessibility scanner tool dark mode professional technical' --design-system -p AccessLens -f markdown)",
+      "Bash(python3 scripts/search.py 'accessibility scanner tool dark mode professional technical' --design-system -p AccessLens)",
+      "Bash(npm create:*)",
+      "Bash(mkdir -p /tmp/accesslens-init)",
+      "Read(//tmp/**)",
+      "Bash(cp:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Skill(accesslint:contrast-checker)",
+      "mcp__plugin_accesslint_accesslint__analyze_color_pair",
+      "mcp__plugin_accesslint_accesslint__suggest_accessible_color",
+      "Bash(xargs sed:*)",
+      "Bash(ls -la /Users/kerwinchen/CascadeProjects/AccessibilityScanner/.env*)",
+      "Bash(node:*)",
+      "Bash(curl -sL \"https://fonts.gstatic.com/s/pacifico/v22/FwZY7-Qmy14u9lezJ-6H6MmBp0u-.woff2\" -o /tmp/Pacifico.woff2)",
+      "Bash(curl -sL \"https://fonts.gstatic.com/s/pacifico/v22/FwZY7-Qmy14u9lezJ-6H6MmBp0u-.ttf\" -o /tmp/Pacifico.ttf)",
+      "Bash(curl -sL \"https://fonts.gstatic.com/s/pacifico/v23/FwZY7-Qmy14u9lezJ96A.ttf\" -o /tmp/Pacifico.ttf)",
+      "Read(//private/tmp/**)",
+      "Bash(npm uninstall:*)"
+    ]
+  }
+}

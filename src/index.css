@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: #FFFFFF;
+    color: #121212;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :focus-visible {
+    outline: 2px solid #9B7A2F;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Card surface — white with fine border, no heavy shadow */
+  .card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E2E2;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05);
+  }
+
+  /* Skip link for keyboard users */
+  .skip-link {
+    position: absolute;
+    top: -9999px;
+    left: 1rem;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background-color: #9B7A2F;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: top 0.15s ease;
+  }
+  .skip-link:focus-visible {
+    top: 1rem;
+    outline: 2px solid #121212;
+    outline-offset: 2px;
+  }
+
+  /* Spin animation */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .spin {
+    animation: spin 1s linear infinite;
+    transform-origin: center;
+  }
+
+  /* Fact card fade */
+  @keyframes fact-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fact-out {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-10px); }
+  }
+  .fact-enter { animation: fact-in  400ms cubic-bezier(0.16,1,0.3,1) forwards; }
+  .fact-exit  { animation: fact-out 300ms cubic-bezier(0.4,0,1,1) forwards; }
+
+  /* Shimmer skeleton loading — light mode */
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      #F0EEE9 25%,
+      #E2E1DC 50%,
+      #F0EEE9 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+
+  /* Severity chips — light mode */
+  .chip-critical {
+    background-color: #FEF0F1;
+    border: 1px solid #F5B5BB;
+    color: #A80015;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.01em;
+  }
+  .chip-warning {
+    background-color: #FDF8EE;
+    border: 1px solid #E8D5A0;
+    color: #7A5E1A;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.01em;
+  }
+  .chip-pass {
+    background-color: #EAF4EE;
+    border: 1px solid #A8D5B8;
+    color: #155230;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.01em;
+  }
+
+  /* Modal backdrop blur */
+  .modal-backdrop {
+    backdrop-filter: blur(2px);
+  }
+
+  /* Scrollbar — light mode */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C8C8C4;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #AEAEAA;
+  }
+}
