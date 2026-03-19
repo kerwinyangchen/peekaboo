@@ -53,4 +53,4 @@ React 19 · Vite · Tailwind CSS · shadcn/ui · Figma REST API
 
 ## Built by
 
-Kerwin Yang Chen — designed and built with Claude Code by Anthropic.
+Kerwin Chen — designed and built with Claude.
