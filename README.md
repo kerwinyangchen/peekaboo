@@ -28,10 +28,11 @@ Peekaboo is an accessibility scanner for product designers. Paste a Figma file U
 ## Required Figma token scopes
 
 When generating your Figma personal access token, only enable:
-- `file_content:read`
-- `file_metadata:read`
+- `file_content:read` — reads file content and renders frame thumbnails
 
 No write permissions needed. Peekaboo never modifies your Figma files.
+
+Set the expiration to 30 days or longer so your token doesn't expire frequently.
 
 ---
 

@@ -13,6 +13,7 @@ const STATES = {
   LOADING:     'loading',
   RESULTS:     'results',
   ERROR:       'error',
+  TOKEN_ERROR: 'token_error',
   NEEDS_TOKEN: 'needs_token',
 }
 
@@ -50,6 +51,18 @@ export default function App() {
     setFigmaCtx(null)
   }, [])
 
+  const handleUpdateToken = useCallback(() => {
+    localStorage.removeItem('figma_token')
+    setFigmaToken('')
+    // Store the failed scan URL so it auto-resumes after token is saved
+    if (scannedUrl) {
+      const parsed = parseFigmaUrl(scannedUrl)
+      pendingScanRef.current = { url: scannedUrl, parsed }
+    }
+    setError(null)
+    setAppState(STATES.NEEDS_TOKEN)
+  }, [scannedUrl])
+
   const handleScan = useCallback(async (url, parsed) => {
     // If no token and this isn't the demo, gate and store the pending scan
     if (url !== '__demo__' && !localStorage.getItem('figma_token')) {
@@ -79,7 +92,11 @@ export default function App() {
       })
 
       if (!res.ok) {
-        if (res.status === 403) throw new Error('Access denied. Make sure the file is shared or your Figma token has access to it.')
+        if (res.status === 401 || res.status === 403) {
+          setError('Your Figma token has expired or is invalid.')
+          setAppState(STATES.TOKEN_ERROR)
+          return
+        }
         if (res.status === 404) throw new Error('File not found. Check the URL and ensure you have view access.')
         throw new Error(`Figma API error (${res.status}). Please try again.`)
       }
@@ -137,7 +154,7 @@ export default function App() {
       />
       <div className="flex flex-col min-h-dvh bg-white">
         {/* Masthead — hidden on landing, shown on results/loading */}
-        <header className="bg-white sticky top-0 z-40" hidden={appState === STATES.IDLE || appState === STATES.ERROR || appState === STATES.NEEDS_TOKEN}>
+        <header className="bg-white sticky top-0 z-40" hidden={appState === STATES.IDLE || appState === STATES.ERROR || appState === STATES.TOKEN_ERROR || appState === STATES.NEEDS_TOKEN}>
           {/* NYT-style red rule at the very top */}
           <div className="h-[3px] bg-[#9B7A2F]" aria-hidden="true" />
 
@@ -188,11 +205,14 @@ export default function App() {
 
         {/* Main */}
         <main id="main-content" className="flex-1 bg-white" tabIndex={-1}>
-          {(appState === STATES.IDLE || appState === STATES.ERROR) && (
+          {(appState === STATES.IDLE || appState === STATES.ERROR || appState === STATES.TOKEN_ERROR) && (
             <UrlInput
               onScan={handleScan}
               isLoading={false}
               error={appState === STATES.ERROR ? error : null}
+              isTokenError={appState === STATES.TOKEN_ERROR}
+              prefillUrl={appState === STATES.TOKEN_ERROR ? scannedUrl : ''}
+              onUpdateToken={handleUpdateToken}
             />
           )}
 

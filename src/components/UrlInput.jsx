@@ -1,15 +1,28 @@
-import { useState, useId, useRef } from 'react'
-import { Link, Loader2, ArrowRight, AlertCircle } from 'lucide-react'
+import { useState, useId, useRef, useEffect } from 'react'
+import { Link, Loader2, ArrowRight, AlertCircle, KeyRound } from 'lucide-react'
 import { parseFigmaUrl } from '../lib/figmaAnalyzer'
 import { cn } from '../lib/utils'
 import { PeekabooBrand } from './PeekabooBrand'
 
-export function UrlInput({ onScan, isLoading, error }) {
-  const [url, setUrl] = useState('')
+export function UrlInput({ onScan, isLoading, error, isTokenError, prefillUrl, onUpdateToken }) {
+  const [url, setUrl] = useState(() => prefillUrl || '')
   const [validationError, setValidationError] = useState(null)
+  const [shakeInput, setShakeInput] = useState(false)
   const inputId = useId()
   const errorId = useId()
+  const tokenErrorId = useId()
   const inputRef = useRef(null)
+  const tokenErrorRef = useRef(null)
+
+  // Shake the input and focus the error banner when token error appears
+  useEffect(() => {
+    if (!isTokenError) return
+    setShakeInput(true)
+    const t = setTimeout(() => setShakeInput(false), 300)
+    // Defer focus so the element is in the DOM
+    const f = setTimeout(() => tokenErrorRef.current?.focus(), 50)
+    return () => { clearTimeout(t); clearTimeout(f) }
+  }, [isTokenError])
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -34,7 +47,8 @@ export function UrlInput({ onScan, isLoading, error }) {
     onScan(trimmed, parsed)
   }
 
-  const displayError = validationError || error
+  // Token errors have their own dedicated UI; regular errors use the inline display
+  const displayError = validationError || (!isTokenError ? error : null)
   const hasError = !!displayError
 
   return (
@@ -102,10 +116,13 @@ export function UrlInput({ onScan, isLoading, error }) {
                   'focus:outline-none focus:ring-2 focus:ring-[#9B7A2F]/30 focus:border-[#9B7A2F]',
                   hasError
                     ? 'border-[#D0021B] focus:ring-[#D0021B]/30'
-                    : 'border-[#C8C8C4] hover:border-[#9B9B9B]'
+                    : 'border-[#C8C8C4] hover:border-[#9B9B9B]',
+                  shakeInput && 'animate-shake'
                 )}
-                aria-describedby={hasError ? errorId : undefined}
-                aria-invalid={hasError}
+                aria-describedby={
+                  hasError ? errorId : isTokenError ? tokenErrorId : undefined
+                }
+                aria-invalid={hasError || undefined}
                 aria-required="true"
                 autoComplete="url"
                 spellCheck="false"
@@ -141,7 +158,7 @@ export function UrlInput({ onScan, isLoading, error }) {
             </button>
           </div>
 
-          {/* Error message */}
+          {/* Validation / generic API error */}
           {hasError && (
             <div
               id={errorId}
@@ -151,6 +168,38 @@ export function UrlInput({ onScan, isLoading, error }) {
             >
               <AlertCircle size={14} className="mt-0.5 flex-shrink-0" aria-hidden="true" />
               <span>{displayError}</span>
+            </div>
+          )}
+
+          {/* Token expired / invalid error */}
+          {isTokenError && (
+            <div
+              ref={tokenErrorRef}
+              id={tokenErrorId}
+              role="alert"
+              aria-live="assertive"
+              tabIndex={-1}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 bg-[#FDF8EE] border border-[#E8D5A0] rounded animate-fade-in focus:outline-none"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <KeyRound size={13} className="text-[#9B7A2F] flex-shrink-0" aria-hidden="true" />
+                <p className="text-sm text-[#7A5E1A] leading-snug">
+                  Your Figma token has expired or is invalid.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onUpdateToken}
+                className={cn(
+                  'flex-shrink-0 h-7 px-3 rounded text-xs font-medium',
+                  'bg-[#9B7A2F] text-white whitespace-nowrap',
+                  'transition-all duration-150',
+                  'hover:bg-[#7A5E1A] active:scale-[0.98]',
+                  'focus:outline-none focus:ring-2 focus:ring-[#9B7A2F] focus:ring-offset-2 focus:ring-offset-[#FDF8EE]'
+                )}
+              >
+                Update token →
+              </button>
             </div>
           )}
         </div>

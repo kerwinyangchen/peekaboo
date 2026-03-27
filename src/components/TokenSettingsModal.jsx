@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useId } from 'react'
-import { Eye, EyeOff, AlertCircle, X, Settings } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, X, Settings, ExternalLink, KeyRound } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 // All focusable element selectors
@@ -18,6 +18,7 @@ export function TokenSettingsModal({ isOpen, onClose, onSave, onClear }) {
   const [error, setError]         = useState(null)
 
   const dialogRef = useRef(null)
+  const inputRef  = useRef(null)
   const inputId   = useId()
   const errorId   = useId()
 
@@ -36,18 +37,18 @@ export function TokenSettingsModal({ isOpen, onClose, onSave, onClear }) {
 
     document.body.style.overflow = 'hidden'
 
-    // Focus first focusable element
+    // Focus the token input — it's the primary action
+    const focusTimer = setTimeout(() => inputRef.current?.focus(), 50)
+
     const el = dialogRef.current
     const focusable = () => [...el.querySelectorAll(FOCUSABLE)]
-    const first = focusable()[0]
-    first?.focus()
 
     function onKeyDown(e) {
       if (e.key === 'Escape') { onClose(); return }
       if (e.key !== 'Tab') return
       const items = focusable()
       if (!items.length) return
-      const last  = items[items.length - 1]
+      const last = items[items.length - 1]
       if (e.shiftKey) {
         if (document.activeElement === items[0]) {
           e.preventDefault(); last.focus()
@@ -61,6 +62,7 @@ export function TokenSettingsModal({ isOpen, onClose, onSave, onClear }) {
 
     document.addEventListener('keydown', onKeyDown)
     return () => {
+      clearTimeout(focusTimer)
       document.body.style.overflow = ''
       document.removeEventListener('keydown', onKeyDown)
     }
@@ -76,10 +78,12 @@ export function TokenSettingsModal({ isOpen, onClose, onSave, onClear }) {
     const trimmed = token.trim()
     if (!trimmed) {
       setError('Please enter a token.')
+      inputRef.current?.focus()
       return
     }
     if (trimmed.length < 20) {
       setError("That doesn\u2019t look like a valid Figma token.")
+      inputRef.current?.focus()
       return
     }
     onSave(trimmed)
@@ -129,72 +133,119 @@ export function TokenSettingsModal({ isOpen, onClose, onSave, onClear }) {
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSave} noValidate className="px-6 py-5 space-y-4">
-          <p className="text-sm text-[#767676] leading-relaxed">
-            Update your Figma personal access token, or clear it to disconnect.
-          </p>
+        <form onSubmit={handleSave} noValidate>
+          <div className="px-6 pt-5 pb-4 space-y-5">
+            <p className="text-sm text-[#767676] leading-relaxed">
+              Update your Figma personal access token, or clear it to disconnect.
+            </p>
 
-          <div className="space-y-2">
-            <label htmlFor={inputId} className="text-sm font-medium text-[#444444] block">
-              Personal access token
-            </label>
-            <div className="relative">
-              <input
-                id={inputId}
-                type={showToken ? 'text' : 'password'}
-                value={token}
-                onChange={(e) => {
-                  setToken(e.target.value)
-                  if (error) setError(null)
-                }}
-                placeholder="Paste new token here"
-                autoComplete="current-password"
-                spellCheck="false"
-                aria-describedby={hasError ? errorId : undefined}
-                aria-invalid={hasError}
-                className={cn(
-                  'w-full h-11 bg-white border rounded',
-                  'pl-3 pr-10 text-sm text-[#121212] placeholder:text-[#C8C8C4]',
-                  'font-mono transition-colors duration-150',
-                  'focus:outline-none focus:ring-2 focus:ring-[#9B7A2F]/30 focus:border-[#9B7A2F]',
-                  hasError
-                    ? 'border-[#D0021B] focus:ring-[#D0021B]/20'
-                    : 'border-[#C8C8C4] hover:border-[#9B9B9B]'
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => setShowToken((v) => !v)}
-                aria-label={showToken ? 'Hide token' : 'Show token'}
-                aria-pressed={showToken}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-[#444444] transition-colors focus:outline-none focus:ring-2 focus:ring-[#9B7A2F] rounded"
-              >
-                {showToken
-                  ? <EyeOff size={15} aria-hidden="true" />
-                  : <Eye    size={15} aria-hidden="true" />
-                }
-              </button>
+            {/* Token input */}
+            <div className="space-y-2">
+              <label htmlFor={inputId} className="text-sm font-medium text-[#444444] block">
+                Personal access token
+              </label>
+              <div className="relative">
+                <input
+                  ref={inputRef}
+                  id={inputId}
+                  type={showToken ? 'text' : 'password'}
+                  value={token}
+                  onChange={(e) => {
+                    setToken(e.target.value)
+                    if (error) setError(null)
+                  }}
+                  placeholder="Paste new token here"
+                  autoComplete="current-password"
+                  spellCheck="false"
+                  aria-describedby={hasError ? errorId : undefined}
+                  aria-invalid={hasError || undefined}
+                  className={cn(
+                    'w-full h-11 bg-white border rounded',
+                    'pl-3 pr-10 text-sm text-[#121212] placeholder:text-[#C8C8C4]',
+                    'font-mono transition-colors duration-150',
+                    'focus:outline-none focus:ring-2 focus:ring-[#9B7A2F]/30 focus:border-[#9B7A2F]',
+                    hasError
+                      ? 'border-[#D0021B] focus:ring-[#D0021B]/20'
+                      : 'border-[#C8C8C4] hover:border-[#9B9B9B]'
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowToken((v) => !v)}
+                  aria-label={showToken ? 'Hide token' : 'Show token'}
+                  aria-pressed={showToken}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-[#444444] transition-colors focus:outline-none focus:ring-2 focus:ring-[#9B7A2F] rounded"
+                >
+                  {showToken
+                    ? <EyeOff size={15} aria-hidden="true" />
+                    : <Eye    size={15} aria-hidden="true" />
+                  }
+                </button>
+              </div>
+
+              {hasError && (
+                <div
+                  id={errorId}
+                  role="alert"
+                  aria-live="assertive"
+                  className="flex items-start gap-2 text-sm text-[#D0021B] animate-fade-in"
+                >
+                  <AlertCircle size={14} className="mt-0.5 flex-shrink-0" aria-hidden="true" />
+                  <span>{error}</span>
+                </div>
+              )}
             </div>
 
-            {hasError && (
-              <div
-                id={errorId}
-                role="alert"
-                aria-live="assertive"
-                className="flex items-start gap-2 text-sm text-[#D0021B] animate-fade-in"
-              >
-                <AlertCircle size={14} className="mt-0.5 flex-shrink-0" aria-hidden="true" />
-                <span>{error}</span>
+            {/* Permissions info */}
+            <div className="rounded border border-[#E2E2E2] bg-[#FAFAF9] px-4 py-3 space-y-2.5">
+              <div className="flex items-center gap-2">
+                <KeyRound size={12} className="text-[#9B7A2F] flex-shrink-0" aria-hidden="true" />
+                <p className="text-xs font-semibold text-[#444444] tracking-wide uppercase">
+                  Required permission
+                </p>
               </div>
-            )}
+
+              <div className="flex items-baseline gap-2">
+                <code className="text-xs font-mono text-[#121212] bg-white border border-[#E2E2E2] px-1.5 py-0.5 rounded-sm flex-shrink-0">
+                  file_content:read
+                </code>
+                <span className="text-xs text-[#767676]">reads file content and renders thumbnails</span>
+              </div>
+
+              <p className="text-xs text-[#9B9B9B] leading-relaxed">
+                No write permissions required — Peekaboo never modifies your Figma files.
+              </p>
+
+              <div className="border-t border-[#E2E2E2] pt-2.5 space-y-1.5">
+                <p className="text-xs text-[#767676] leading-relaxed">
+                  <span className="font-medium text-[#444444]">Tip:</span>{' '}
+                  Set expiration to 30 days or longer to avoid frequent re-authentication.
+                </p>
+                <a
+                  href="https://www.figma.com/settings"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-[#9B7A2F] hover:text-[#7A5E1A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#9B7A2F] rounded"
+                >
+                  Open Figma Settings to generate a token
+                  <ExternalLink size={10} aria-hidden="true" />
+                  <span className="sr-only">(opens in new tab)</span>
+                </a>
+              </div>
+            </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-between pt-1 gap-3">
+          {/* Footer / actions */}
+          <div className="flex items-center justify-between px-6 py-4 border-t border-[#E2E2E2] gap-3">
             <button
               type="button"
               onClick={handleClear}
-              className="text-sm text-[#9B9B9B] hover:text-[#D0021B] transition-colors focus:outline-none focus:ring-2 focus:ring-[#D0021B] rounded px-2 py-1.5 -ml-2"
+              className={cn(
+                'text-sm text-[#9B9B9B] px-2 py-1.5 rounded -ml-2',
+                'transition-colors duration-150',
+                'hover:text-[#D0021B] hover:bg-[#FEF0F1]',
+                'focus:outline-none focus:ring-2 focus:ring-[#D0021B] focus:ring-offset-1'
+              )}
             >
               Clear token
             </button>
